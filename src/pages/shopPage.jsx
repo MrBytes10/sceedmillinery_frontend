@@ -25,22 +25,23 @@ const ShopPage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12; // Number of products to show per page
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        let url = `${API_ENDPOINTS.getProducts}?maxPrice=${priceRange}`;
+        let url = `${API_ENDPOINTS.getProducts}`;
 
         if (selectedColors.length > 0) {
-          url += `&colors=${selectedColors.join(",")}`;
+          url += `?colors=${selectedColors.join(",")}`;
         }
 
         if (selectedCategory) {
-          url += `&category=${selectedCategory}`;
+          url += selectedColors.length > 0 ? `&category=${selectedCategory}` : `?category=${selectedCategory}`;
         }
 
         if (inStock) {
-          url += `&inStock=true`;
+          url += (selectedColors.length > 0 || selectedCategory) ? `&inStock=true` : `?inStock=true`;
         }
 
         const response = await fetch(url);
@@ -59,17 +60,16 @@ const ShopPage = () => {
     };
 
     fetchProducts();
-  }, [priceRange, selectedColors, selectedCategory, inStock]);
+  }, [selectedColors, selectedCategory, inStock]);
 
   const filteredProducts = products.filter((product) => {
-    const meetsPrice = product.price <= priceRange;
     const meetsColor =
       selectedColors.length === 0 || selectedColors.includes(product.color);
     const meetsCategory =
       !selectedCategory || product.category === selectedCategory;
     const meetsInStock = inStock ? product.isInStock : true;
 
-    return meetsPrice && meetsColor && meetsCategory && meetsInStock;
+    return meetsColor && meetsCategory && meetsInStock;
   });
 
   // Calculate pagination
@@ -90,7 +90,7 @@ const ShopPage = () => {
 
   useEffect(() => {
     setCurrentPage(1); // Reset to first page when filters change
-  }, [priceRange, selectedColors, selectedCategory, inStock]);
+  }, [selectedColors, selectedCategory, inStock]);
 
   if (loading) {
     return (
@@ -142,31 +142,34 @@ const ShopPage = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
+      <div className="py-3 px-4 sm:px-6 lg:px-8 flex justify-end">
+        <button
+          onClick={() => setIsFilterOpen(!isFilterOpen)}
+          className="flex items-center gap-2 px-4 py-2 border border-[#212121] text-sm font-medium text-[#212121] rounded-[6px] hover:bg-[#212121] hover:text-white transition-colors duration-200">
+          {isFilterOpen ? " " : "Filters"}
+        </button>
+      </div>
+      <Filter
+        priceRange={priceRange}
+        setPriceRange={setPriceRange}
+        selectedColors={selectedColors}
+        setSelectedColors={setSelectedColors}
+        selectedCategory={selectedCategory}
+        setSelectedCategory={setSelectedCategory}
+        inStock={inStock}
+        setInStock={setInStock}
+        isOpen={isFilterOpen}
+        onClose={() => setIsFilterOpen(false)}
+        onApplyFilters={() => {
+          // This will trigger a re-render of the ProductGrid
+          // You can also add any additional filter logic here
+        }}
+      />
       <main className="flex-grow container mx-auto px-4 mt-8">
         <div
           className="flex flex-col md:flex-row gap-8"
           ref={productsSectionRef}>
-          <div
-            ref={filterRef}
-            className={`md:w-1/4 ${filterSticky ? "md:sticky md:top-20" : ""}`}
-            style={{ height: "fit-content" }}>
-            <Filter
-              priceRange={priceRange}
-              setPriceRange={setPriceRange}
-              selectedColors={selectedColors}
-              setSelectedColors={setSelectedColors}
-              selectedCategory={selectedCategory}
-              setSelectedCategory={setSelectedCategory}
-              inStock={inStock}
-              setInStock={setInStock}
-              onApplyFilters={() => {
-                // This will trigger a re-render of the ProductGrid
-                // You can also add any additional filter logic here
-              }}
-            />
-          </div>
-
-          <div ref={productGridRef} className="md:w-3/4">
+          <div ref={productGridRef} className="md:w-full">
             <ProductGrid
               products={currentProducts}
               selectedCategory={selectedCategory}

@@ -4,7 +4,6 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { useFavorites } from "../contexts/FavoritesContext";
-
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToFavorites, removeFromFavorites, isInFavorites } = useFavorites();
@@ -12,7 +11,6 @@ const ProductCard = ({ product }) => {
   const handleFavoriteClick = async (e) => {
     e.stopPropagation();
     const isFavorited = isInFavorites(product.id);
-
     if (isFavorited) {
       await removeFromFavorites(product.id);
     } else {
@@ -21,100 +19,98 @@ const ProductCard = ({ product }) => {
   };
 
   const productImage =
-    product.displayImage || "https://via.placeholder.com/150";
+    product.displayImage || "https://via.placeholder.com/400x400";
 
-  // Calculate discount percentage only if original price exists AND is higher than current price
   const discountPercentage =
     product.originalPrice && product.originalPrice > product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100
-        )
+        ((product.originalPrice - product.price) / product.originalPrice) *
+        100
+      )
       : null;
 
-  return (
-    <div className="bg-white rounded shadow border-2 border-transparent hover:border-gray-500 transition-all duration-300 relative flex flex-col h-90">
-      <div className="relative h-40 flex-shrink-0">
-        {/* Stock badge */}
-        {/* {!product.isInStock && (
-          <div className="absolute top-12 left-2 z-10 bg-gray-800 text-white px-3 py-1 rounded-full">
-            Out of Stock
-          </div>
-        )} */}
+  // "A FEW LEFT" when stock is low but not zero — adjust threshold to taste
+  const isLowStock =
+    product.isInStock &&
+    product.stockCount != null &&
+    product.stockCount <= 5;
 
-        {/* Sale badge - only shown when there's a valid discount (original price > current price) */}
-        {discountPercentage && (
-          <div
-            onClick={() => navigate(`/product/${product.id}`)}
-            className="absolute top-2 left-2 z-10 bg-[#8F8F8F] text-white px-3 py-1 rounded-full cursor-pointer hover:bg-red-600 transition-colors">
-            Buy
-          </div>
+  return (
+    <div
+      onClick={() => product.isInStock && navigate(`/product/${product.id}`)}
+      className={`group relative flex flex-col ${product.isInStock ? "cursor-pointer" : "cursor-default opacity-60"
+        }`}>
+
+      {/* ── Image area ──────────────────────────────────────────────────── */}
+      <div className="relative w-full bg-[#efefef] overflow-hidden aspect-[3/4]">
+
+        {/* Low stock badge — top left, matching reference */}
+        {(isLowStock || product.isLowStock) && (
+          <span className="absolute top-3 left-3 z-10 text-[9px] font-medium tracking-[0.15em] uppercase text-[#212121]">
+            A Few Left
+          </span>
         )}
 
+        {/* Discount badge — top left (only when no low-stock badge) */}
+        {discountPercentage && !isLowStock && !product.isLowStock && (
+          <span className="absolute top-3 left-3 z-10 text-[9px] font-medium tracking-[0.15em] uppercase text-[#212121]">
+            {discountPercentage}% Off
+          </span>
+        )}
+
+        {/* Out of stock badge */}
+        {!product.isInStock && (
+          <span className="absolute top-3 left-3 z-10 text-[9px] font-medium tracking-[0.15em] uppercase text-[#888]">
+            Out of Stock
+          </span>
+        )}
+
+        {/* Favourite button — top right */}
         <button
           onClick={handleFavoriteClick}
-          className="absolute top-2 right-8 z-10 p-2 rounded-full bg-white/10 hover:bg-white transition-colors"
+          className="absolute top-3 right-3 z-10 p-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
           aria-label={
             isInFavorites(product.id)
               ? "Remove from favorites"
               : "Add to favorites"
           }>
           <Heart
-            className={`w-5 h-5 transition-colors ${
-              isInFavorites(product.id)
-                ? "text-red-500 fill-current"
-                : "text-gray-600 hover:text-red-500"
-            }`}
+            className={`w-4 h-4 transition-colors ${isInFavorites(product.id)
+                ? "text-[#212121] fill-current"
+                : "text-[#212121]"
+              }`}
           />
         </button>
 
+        {/* Product image — subtle scale on hover */}
         <img
           src={productImage}
           alt={product.name}
-          className="w-full h-40 object-contain"
+          className="w-full h-full object-contain transition-transform duration-500 ease-out group-hover:scale-[1.03]"
         />
       </div>
 
-      <div className="p-4 flex flex-col flex-grow">
-        <h3 className="font-playfair font-semibold tracking-wide text-xs mb-1 line-clamp-2">
+      {/* ── Info area ───────────────────────────────────────────────────── */}
+      <div className="pt-3 pb-1">
+        <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#212121] leading-snug line-clamp-1">
           {product.name}
-        </h3>
+        </p>
 
-        <div className="flex justify-between items-center mb-0">
-          <div className="flex flex-col">
-            {/* Only show original price if it exists AND is higher than current price */}
-            {discountPercentage && (
-              <span className="text-gray-500 line-through text-sm">
-                $ {product.originalPrice.toLocaleString()}
-              </span>
-            )}
-            <span className="font-playfair font-semibold tracking-wide text-xs">
-              $ {product.price.toLocaleString()}
-            </span>
-          </div>
-          {/* Discount badge only shown when there's a valid discount */}
+        <div className="flex items-baseline gap-2 mt-1">
           {discountPercentage && (
-            <span className="bg-red-100 text-red-800 text-xs px-2 py-1 rounded">
-              {discountPercentage}% OFF
+            <span className="text-[10px] tracking-wide text-[#999] line-through">
+              ${product.originalPrice.toLocaleString()} USD
             </span>
           )}
+          <span className="text-[10px] tracking-wide text-[#212121]">
+            ${product.price.toLocaleString()} USD
+          </span>
         </div>
-
-        {/* either show view details button, or out  of stock message */}
-        <button
-          onClick={() => navigate(`/product/${product.id}`)}
-          className={`mt-auto px-4 py-2 rounded w-full transition-colors duration-200 ${
-            product.isInStock
-              ? "bg-black text-white hover:bg-gray-800"
-              : "bg-gray-300 text-gray-600 cursor-not-allowed"
-          }`}
-          disabled={!product.isInStock}>
-          {product.isInStock ? "View Details" : "Out of Stock"}
-        </button>
       </div>
     </div>
   );
 };
+
 
 const ProductGrid = ({ products }) => {
   return (

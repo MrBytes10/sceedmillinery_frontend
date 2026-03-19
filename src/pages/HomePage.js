@@ -2,6 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
+import Hero from "../components/Hero";
 import Filter from "../components/Filter";
 import ProductGrid from "../components/ProductGrid";
 import BannerOne from "../components/bannerOne";
@@ -10,17 +11,6 @@ import Gallery from "../components/Gallery";
 import Footer from "../components/Footer";
 import { API_ENDPOINTS } from "../config/api";
 import Pagination from "../components/pagination";
-
-// Import gallery images
-import gallery1 from "../images/gallery1.jpg";
-import gallery2 from "../images/gallery2.jpg";
-import gallery3 from "../images/gallery3.jpg";
-import gallery4 from "../images/gallery4.jpg";
-import gallery5 from "../images/gallery5.jpg";
-import gallery6 from "../images/gallery6.jpg";
-import gallery7 from "../images/gallery7.jpg";
-import gallery8 from "../images/gallery8.jpg";
-import gallery9 from "../images/gallery9.jpg";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -45,7 +35,7 @@ const HomePage = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 12; // Number of products to show per page
-  const [isFilterVisible, setIsFilterVisible] = useState(false); // New state for filter visibility
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Fetch products from the backend
   // the fetchProducts function:
@@ -115,18 +105,6 @@ const HomePage = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const galleryImages = [
-    { src: gallery1, alt: " " },
-    { src: gallery2, alt: " " },
-    { src: gallery3, alt: " " },
-    { src: gallery4, alt: " " },
-    { src: gallery5, alt: " " },
-    { src: gallery6, alt: " " },
-    { src: gallery7, alt: " " },
-    { src: gallery8, alt: " " },
-    { src: gallery9, alt: " " },
-  ];
-
   //filtering products by discount
   // Filter products based on price range
   // const filteredProducts = products.filter((product) => {
@@ -141,9 +119,9 @@ const HomePage = () => {
     const discountPercentage =
       product.originalPrice && product.originalPrice > product.price
         ? Math.round(
-            ((product.originalPrice - product.price) / product.originalPrice) *
-              100
-          )
+          ((product.originalPrice - product.price) / product.originalPrice) *
+          100
+        )
         : 0;
 
     // Check if any discount filter is selected
@@ -237,69 +215,10 @@ const HomePage = () => {
     );
   }
 
-  return (
-    <div className="flex flex-col min-h-screen">
-      <Header />
+  return (<>
+    <Hero />
 
-      {/* Empty row to separate header */}
-      {/* <div
-        style={{ backgroundColor: "#CECDC8" }}
-        className="h-10 w-full border"
-      /> */}
-
-      {/* Main content */}
-      <main className="flex-grow mx-auto px-1 mt-8">
-        {/*container*/}
-
-        {/* Filter and product grid */}
-        <div
-          ref={productsSectionRef}
-          className="flex flex-col md:flex-row gap-8">
-          <div className="md:w-1/4">
-            <button
-              onClick={() => setIsFilterVisible(!isFilterVisible)} // Toggle filter visibility
-              className="bg-blue-500 text-white p-2 rounded">
-              {isFilterVisible ? "Hide Filters" : "Show Filters"}
-            </button>
-            {isFilterVisible && ( // Conditionally render the Filter component
-              <Filter
-                priceRange={priceRange}
-                setPriceRange={setPriceRange}
-                discountFilters={discountFilters}
-                setDiscountFilters={setDiscountFilters}
-                inStock={inStock}
-                setInStock={setInStock}
-                onApplyFilters={() => {
-                  // This will trigger a re-render of the ProductGrid
-                }}
-              />
-            )}
-          </div>
-
-          <div ref={productGridRef} className="md:w-3/4">
-            {/* <ProductGrid products={filteredProducts} /> */}
-            <ProductGrid products={currentProducts} />
-            <Pagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
-          </div>
-        </div>
-
-        {/* Additional sections */}
-        {showAdditionalSections && (
-          <>
-            <BannerOne />
-            <BannerTwo />
-            {/* <Gallery images={galleryImages} /> */}
-          </>
-        )}
-      </main>
-
-      <Footer />
-    </div>
-  );
+  </>);
 };
 
 export default HomePage;

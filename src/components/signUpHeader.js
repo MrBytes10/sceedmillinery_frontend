@@ -44,27 +44,24 @@ const Header = () => {
               <li>
                 <Link
                   to="/"
-                  className={`text-black hover:text-gray-600 font-medium font-playfair font-semibold tracking-wide text-sm sm:text-base ${
-                    isActive("/") ? "opacity-50" : ""
-                  }`}>
+                  className={`text-black hover:text-gray-600 font-medium font-playfair font-semibold tracking-wide text-sm sm:text-base ${isActive("/") ? "opacity-50" : ""
+                    }`}>
                   Home
                 </Link>
               </li>
               <li>
                 <Link
                   to="/about"
-                  className={`text-black hover:text-gray-600 font-medium text-sm sm:text-base ${
-                    isActive("/about") ? "opacity-50" : ""
-                  }`}>
+                  className={`text-black hover:text-gray-600 font-medium text-sm sm:text-base ${isActive("/about") ? "opacity-50" : ""
+                    }`}>
                   About
                 </Link>
               </li>
               <li>
                 <Link
                   to="/contact"
-                  className={`text-black hover:text-gray-600 font-medium text-sm sm:text-base ${
-                    isActive("/contact") ? "opacity-50" : ""
-                  }`}>
+                  className={`text-black hover:text-gray-600 font-medium text-sm sm:text-base ${isActive("/contact") ? "opacity-50" : ""
+                    }`}>
                   Contact Us
                 </Link>
               </li>

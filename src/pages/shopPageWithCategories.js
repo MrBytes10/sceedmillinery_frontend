@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
-import Filter from "../components/Filter";
+// import Filter from "../components/Filter";
 import ProductGrid from "../components/ProductGrid";
 import Footer from "../components/Footer";
 import { API_ENDPOINTS } from "../config/api";
@@ -110,6 +110,7 @@ const ShopPage = () => {
     return (
       <div className="flex flex-col min-h-screen">
         <Header />
+        {/* 
         <div
           ref={filterRef}
           className={`md:w-1/4 ${filterSticky ? "md:sticky md:top-20" : ""}`}
@@ -129,6 +130,7 @@ const ShopPage = () => {
             }}
           />
         </div>
+        */}
         <div className="flex-grow container mx-auto px-4 mt-[-20vw]">
           <div className="flex justify-center items-center h-64">
             <div className="text-xl text-red-600">{error}</div>
@@ -146,6 +148,7 @@ const ShopPage = () => {
         <div
           className="flex flex-col md:flex-row gap-8"
           ref={productsSectionRef}>
+          {/* 
           <div
             ref={filterRef}
             className={`md:w-1/4 ${filterSticky ? "md:sticky md:top-20" : ""}`}
@@ -165,8 +168,9 @@ const ShopPage = () => {
               }}
             />
           </div>
+          */}
 
-          <div ref={productGridRef} className="md:w-3/4">
+          <div ref={productGridRef} className="md:w-full">
             <ProductGrid
               products={currentProducts}
               selectedCategory={selectedCategory}
