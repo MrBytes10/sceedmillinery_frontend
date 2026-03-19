@@ -6,6 +6,6 @@
     "\\src\\config",
     "\\src\\contexts"
   ],
-  "SelectedNode": "\\src\\App.js",
+  "SelectedNode": "\\src\\contexts\\CartContext.js",
   "PreviewInSolutionExplorer": false
 }

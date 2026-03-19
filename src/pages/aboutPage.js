@@ -1,4 +1,4 @@
-// sceed_frontend/src/pages/AboutPage.js
+// //sceed_frontend/src/pages/AboutPage.js
 
 import React from "react";
 import Header from "../components/Header";
