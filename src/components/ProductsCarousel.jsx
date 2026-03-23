@@ -1,9 +1,13 @@
-//sceed_frontend/src/components/ProductGrid.js
+"use client";
 
-import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { useNavigate } from "react-router-dom";
 import { Heart } from "lucide-react";
 import { useFavorites } from "../contexts/FavoritesContext";
+import { API_ENDPOINTS } from "../config/api";
+
 const ProductCard = ({ product }) => {
   const navigate = useNavigate();
   const { addToFavorites, removeFromFavorites, isInFavorites } = useFavorites();
@@ -29,7 +33,6 @@ const ProductCard = ({ product }) => {
       )
       : null;
 
-  // "A FEW LEFT" when stock is low but not zero — adjust threshold to taste
   const isLowStock =
     product.isInStock &&
     product.stockCount != null &&
@@ -39,11 +42,10 @@ const ProductCard = ({ product }) => {
     <div
       onClick={() => product.isInStock && navigate(`/product/${product.id}`)}
       className={`group relative flex flex-col ${product.isInStock ? "cursor-pointer" : "cursor-default opacity-60"
-        }`}>
-
+        }`}
+    >
       {/* ── Image area ──────────────────────────────────────────────────── */}
       <div className="relative w-full bg-[#efefef] overflow-hidden aspect-[3/4]">
-
         {/* Low stock badge — top left, matching reference */}
         {(isLowStock || product.isLowStock) && (
           <span className="absolute top-3 left-3 z-10 text-[9px] font-medium tracking-[0.15em] uppercase text-[#212121]">
@@ -73,11 +75,12 @@ const ProductCard = ({ product }) => {
             isInFavorites(product.id)
               ? "Remove from favorites"
               : "Add to favorites"
-          }>
+          }
+        >
           <Heart
             className={`w-4 h-4 transition-colors ${isInFavorites(product.id)
-                ? "text-white fill-current"
-                : "text-white"
+              ? "text-white fill-current"
+              : "text-white"
               }`}
           />
         </button>
@@ -92,17 +95,17 @@ const ProductCard = ({ product }) => {
 
       {/* ── Info area ───────────────────────────────────────────────────── */}
       <div className="pt-3 pb-1">
-        <p className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#212121] leading-snug line-clamp-1">
+        <p className="text-[14px] font-medium tracking-[0.12em] uppercase text-black leading-snug line-clamp-1">
           {product.name}
         </p>
 
         <div className="flex items-baseline gap-2 mt-1">
           {discountPercentage && (
-            <span className="text-[10px] tracking-wide text-[#999] line-through">
+            <span className="text-[10px] tracking-wide text-black line-through">
               ${product.originalPrice.toLocaleString()} USD
             </span>
           )}
-          <span className="text-[10px] tracking-wide text-[#212121]">
+          <span className="text-[10px] tracking-wide text-black">
             ${product.price.toLocaleString()} USD
           </span>
         </div>
@@ -111,21 +114,74 @@ const ProductCard = ({ product }) => {
   );
 };
 
+const ProductsCarousel = () => {
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [emblaRef] = useEmblaCarousel(
+    {
+      loop: true,
+      align: "start",
+      skipSnaps: false,
+    },
+    [Autoplay({ delay: 5000, stopOnInteraction: false })]
+  );
 
-const ProductGrid = ({ products }) => {
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await fetch(API_ENDPOINTS.getProducts);
+        if (!response.ok) {
+          throw new Error("Failed to fetch products");
+        }
+        const data = await response.json();
+        setProducts(data.slice(0, 12)); // Limit to 12 products for carousel
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching products:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="py-12" style={{ background: "linear-gradient(135deg, #3E0B08 0%, #000000 100%)" }}>
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl sm:text-3xl md:text-4xl lg:text-5xl text-center mb-8 text-black">
+            Featured Products
+          </h2>
+          <div className="flex justify-center items-center h-64">
+            <div className="text-xl">Loading products...</div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-      {products.length === 0 ? (
-        <p className="text-2xl sm:text-3xl md:text-4xl font-semibold text-gray-600 text-center col-span-full">
-          No products found within that Price Range.
-        </p>
-      ) : (
-        products.map((product) => (
-          <ProductCard key={product.id} product={product} />
-        ))
-      )}
-    </div>
+    <section className="py-12 bg-white">
+      <div className="container mx-auto px-4">
+        <h2 className="font-alexBrush text-6xl text-center mb-8 text-black">
+          Featured Products
+        </h2>
+
+        <div className="w-full overflow-hidden pt-8 text-black" ref={emblaRef}>
+          <div className="flex gap-4">
+            {products.map((product) => (
+              <div
+                key={product.id}
+                className="flex-[0_0_100%] sm:flex-[0_0_50%] md:flex-[0_0_33.333%] lg:flex-[0_0_25%] min-w-0"
+              >
+                <ProductCard product={product} />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
 
-export default ProductGrid;
+export default ProductsCarousel;

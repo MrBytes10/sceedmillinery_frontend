@@ -29,7 +29,7 @@ const Hero = () => {
 
   return (
     <>
-      <div className="relative w-full h-screen">
+      <div className="relative w-full h-screen bg-fixed">
         {/* Background image */}
         <img
           src={heroImage}
@@ -56,7 +56,7 @@ const Hero = () => {
                   <li>
                     <Link
                       to="/about"
-                      className={`text-white font-medium text-xl  relative ${isActive("/about") ? "opacity-50" : ""
+                      className={`text-white font-semibold font-alexBrush text-3xl  relative ${isActive("/about") ? "opacity-50" : ""
                         }`}>
                       <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">About</span>
                     </Link>
@@ -65,7 +65,7 @@ const Hero = () => {
                   <li>
                     <Link
                       to="/shop"
-                      className={`text-white font-medium font-medium tracking-wide text-xl relative ${isActive("/shop") ? "opacity-50" : ""
+                      className={`text-white font-semibold font-medium font-alexBrush tracking-wide text-3xl relative ${isActive("/shop") ? "opacity-50" : ""
                         }`}>
                       <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">Shop</span>
                     </Link>
@@ -73,7 +73,7 @@ const Hero = () => {
                   <li>
                     <Link
                       to="/our-awards"
-                      className={`text-white font-medium text-xl relative ${isActive("/our-awards") ? "opacity-50" : ""
+                      className={`text-white font-semibold font-alexBrush text-3xl relative ${isActive("/our-awards") ? "opacity-50" : ""
                         }`}>
                       <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-white after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">Our Awards</span>
                     </Link>
@@ -87,7 +87,7 @@ const Hero = () => {
         {/*product description at bottom*/}
         <div className="absolute bottom-0 right-0 z-10 bg-gradient-to-l from-black/800 to-transparent px-4 sm:px-6 lg:px-8 py-8">
           <div className="container mx-auto text-white">
-            <h2 className="text-3xl sm:text-4xl font-raleway font-bold mb-4">
+            <h2 className="text-4xl sm:text-5xl font-alexBrush font-bold mb-4">
               Elevate Your Style with Sceed Millinery
             </h2>
             <p className="sm:text-base font-raleway font-semibold leading-relaxed max-w-2xl">
@@ -96,12 +96,17 @@ const Hero = () => {
               Designed for women who appreciate distinction, our fascinators bring a sense of effortless refinement to life's most memorable occasions — from weddings and race days to elegant celebrations.
 
               More than accessories, Sceed Millinery pieces are statement designs that frame your presence with confidence and grace. Discover a collection where timeless millinery meets modern sophistication. <br />
-              <div className="flex flex-row items-left mt-4 gap-2">
+              <div className="flex flex-row items-center mt-4 gap-2">
                 <Link to="/shop">
-                  Expore more
+                  <span className="relative inline-block px-3 py-2
+                    before:content-[''] before:absolute before:inset-0 
+                    before:scale-x-0 before:scale-y-0 before:origin-center before:transition-transform before:duration-500
+                    hover:before:scale-x-100 hover:before:scale-y-100 after:content-[''] after:absolute after:inset-0 after:border-2 after:border-transparent
+                    after:hover:border-white after:transition-colors after:duration-500">Explore more</span>
                 </Link>
                 <MoveRight />
               </div>
+
             </p>
           </div>
         </div>

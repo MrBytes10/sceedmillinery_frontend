@@ -105,19 +105,19 @@ const CartPage = () => {
           </h1>
         </div>
 
-        <main className="flex-grow">
-          <div className="container mx-auto px-1 py-4">
+        <main className="flex-grow h-full w-auto">
+          <div className="container mx-auto px-1 py-4 h-[100%]">
             {items.length === 0 ? (
-              <div className="text-center py-0 bg-gray-50 rounded-lg">
+              <div className="text-center py-0 bg-white rounded-lg h-full w-auto">
                 <h1 className="text-2xl font-medium mb-8 text-black text-center opacity-50">
                   Your cart is empty
                 </h1>
-                <p className="text-gray-500 mb-6">
+                <p className="text-black mb-6 font-raleway text-xl">
                   You haven't added any products to your Cart yet.
                 </p>
                 <a
                   href="/shop"
-                  className="inline-block bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors duration-200">
+                  className="inline-block bg-white border border-black text-black px-6 py-3 hover:bg-black hover:text-white rounded-md transition-colors duration-200">
                   Browse Products
                 </a>
               </div>
@@ -237,11 +237,8 @@ const CartPage = () => {
             )}
           </div>
 
-          <BannerOne />
-          <BannerTwo />
         </main>
       </div>
-      <Footer />
     </div>
   );
 };

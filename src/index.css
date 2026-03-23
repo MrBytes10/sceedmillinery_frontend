@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Raleway:wght@400;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Alex+Brush&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -14,27 +15,39 @@ body {
 
 h2 {
   font-family: "Playfair Display", "Poppins", sans-serif;
-  font-weight: 600; /* Use font-weight: 600 as per Figma */
-  font-size: 24px; /* Change to 32px for larger screens */
-  line-height: 37px; /* Line height */
+  font-weight: 600;
+  /* Use font-weight: 600 as per Figma */
+  font-size: 24px;
+  /* Change to 32px for larger screens */
+  line-height: 37px;
+  /* Line height */
 }
 
 p {
   font-family: "Playfair Display", "Poppins", sans-serif;
-  font-weight: 400; /* Use font-weight: 400 as per Figma */
-  font-size: 14px; /* Change to 14px */
+  font-weight: 400;
+  /* Use font-weight: 400 as per Figma */
+  font-size: 14px;
+  /* Change to 14px */
 }
+
 .flex-container {
-  height: 100%; /* or a specific height, e.g., 100vh or 400px */
+  height: 100%;
+  /* or a specific height, e.g., 100vh or 400px */
 }
+
 .error-message {
-  background-color: #ffe6e6; /* Light red background */
-  color: #d8000c; /* Dark red text color */
+  background-color: #ffe6e6;
+  /* Light red background */
+  color: #d8000c;
+  /* Dark red text color */
   font-size: 14px;
   margin-top: 5px;
   padding: 8px;
-  border: 1px solid #d8000c; /* Border to make it stand out */
-  border-radius: 4px; /* Rounded corners */
+  border: 1px solid #d8000c;
+  /* Border to make it stand out */
+  border-radius: 4px;
+  /* Rounded corners */
 }
 
 /* Custom styles for react-phone-input-2 */

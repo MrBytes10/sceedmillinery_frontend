@@ -1,13 +1,11 @@
-// sceed_frontend/src/pages/signUpPage.js
 import React, { useState } from "react";
-import Footer from "../components/Footer";
-import SecondHeader from "../components/signUpHeader";
-import logoImage from "../images/sceedBlackLogo.png";
-import backgroundImage from "../images/woman-portrait-female-african-american.jpg";
+import Header from "../components/Header";
+import backgroundImage from "../images/modelAlone.jpg";
 import { API_ENDPOINTS } from "../config/api";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 import phoneUtils from "../utils/phoneUtils";
+import { Eye, EyeOff } from "lucide-react";
 
 const SignUpPage = () => {
   const [formData, setFormData] = useState({
@@ -25,53 +23,29 @@ const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-  // Validation rules
   const validateForm = () => {
     const newErrors = {};
+    if (!formData.fullName.trim()) newErrors.fullName = "Full name is required";
+    else if (formData.fullName.length < 2) newErrors.fullName = "At least 2 characters";
 
-    // Full Name validation
-    if (!formData.fullName.trim()) {
-      newErrors.fullName = "Full name is required";
-    } else if (formData.fullName.length < 2) {
-      newErrors.fullName = "Full name must be at least 2 characters long";
-    }
-
-    // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
+    if (!formData.email) newErrors.email = "Email is required";
+    else if (!emailRegex.test(formData.email)) newErrors.email = "Enter a valid email";
 
-    // Physical Address validation
-    if (!formData.physicalAddress.trim()) {
-      newErrors.physicalAddress = "Physical address is required";
-    }
+    if (!formData.physicalAddress.trim()) newErrors.physicalAddress = "Address is required";
 
-    // Phone Number validation using phoneUtils
-    if (!formData.phoneNumber) {
-      newErrors.phoneNumber = "Phone number is required";
-    } else if (!phoneUtils.isValidMobile("+" + formData.phoneNumber)) {
-      newErrors.phoneNumber = "Please enter a valid phone number";
-    }
+    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone number is required";
+    else if (!phoneUtils.isValidMobile("+" + formData.phoneNumber))
+      newErrors.phoneNumber = "Enter a valid phone number";
 
-    // Password validation
-    const passwordRegex =
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (!passwordRegex.test(formData.password)) {
-      newErrors.password =
-        "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character";
-    }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    if (!formData.password) newErrors.password = "Password is required";
+    else if (!passwordRegex.test(formData.password))
+      newErrors.password = "Min 8 chars with uppercase, number & special character";
 
-    // Confirm Password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
+    if (!formData.confirmPassword) newErrors.confirmPassword = "Please confirm your password";
+    else if (formData.password !== formData.confirmPassword)
       newErrors.confirmPassword = "Passwords do not match";
-    }
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -79,280 +53,205 @@ const SignUpPage = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: null,
-      }));
-    }
+    setFormData((prev) => ({ ...prev, [name]: value }));
+    if (errors[name]) setErrors((prev) => ({ ...prev, [name]: null }));
   };
 
-  // Handle phone number change from react-phone-input-2
-  const handlePhoneChange = (value, country) => {
-    // value comes without +, but with country code
-    setFormData((prev) => ({
-      ...prev,
-      phoneNumber: value, // react-phone-input-2 handles formatting
-    }));
-
-    if (errors.phoneNumber) {
-      setErrors((prev) => ({
-        ...prev,
-        phoneNumber: null,
-      }));
-    }
+  const handlePhoneChange = (value) => {
+    setFormData((prev) => ({ ...prev, phoneNumber: value }));
+    if (errors.phoneNumber) setErrors((prev) => ({ ...prev, phoneNumber: null }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setApiError(null);
-
-    if (!validateForm()) {
-      return;
-    }
-
+    if (!validateForm()) return;
     setIsSubmitting(true);
-
     try {
-      const registrationData = {
-        fullName: formData.fullName,
-        email: formData.email,
-        phoneNumber: "+" + formData.phoneNumber, // Add + prefix for international format
-        physicalAddress: formData.physicalAddress,
-        password: formData.password,
-      };
-
       const response = await fetch(API_ENDPOINTS.registerUser, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(registrationData),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          fullName: formData.fullName,
+          email: formData.email,
+          phoneNumber: "+" + formData.phoneNumber,
+          physicalAddress: formData.physicalAddress,
+          password: formData.password,
+        }),
       });
-
       const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.error || "Registration failed");
-      }
-
-      if (data.token) {
-        localStorage.setItem("authToken", data.token);
-      }
-
+      if (!response.ok) throw new Error(data.error || "Registration failed");
+      if (data.token) localStorage.setItem("authToken", data.token);
       window.location.href = "/registration-success";
     } catch (error) {
-      console.error("Registration error:", error);
       setApiError(error.message);
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Error message component
-  const ErrorMessage = ({ error }) =>
-    error ? (
-      <p className="text-red-700 bg-customGray rounded-2xl text-sm mt-1">
-        {error}
-      </p>
-    ) : null;
+  // Shared input class builder
+  const inputCls = (field) =>
+    `w-full h-11 px-4 bg-transparent border text-sm text-[#212121] placeholder:text-[#aaa] outline-none transition-colors duration-200 ${errors[field] ? "border-red-400 focus:border-red-500" : "border-[#d4d4d4] focus:border-[#212121]"
+    }`;
+
+  const fields = [
+    { name: "fullName", label: "Full Name", type: "text", col: 1 },
+    { name: "email", label: "Email Address", type: "email", col: 2 },
+    { name: "physicalAddress", label: "Physical Address", type: "text", col: 1 },
+  ];
 
   return (
-    <div
-      className="flex flex-col min-h-screen"
-      style={{
-        backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-      }}>
-      <SecondHeader />
-      <section
-        className="mb-0"
-        style={{
-          backgroundColor: "rgba(206, 205, 200, 0.8)",
-        }}>
-        <main className="flex-grow">
-          <div className="relative">
-            <div className="relative z-10 container mx-auto px-4 py-2 max-w-4xl min-h-[calc(100vh-120px)]">
-              {/* Logo */}
-              <div className="flex justify-center mb-0">
-                <img
-                  src={logoImage}
-                  alt="SCEED Millinery"
-                  className="w-[304px] h-[123px] md:w-1/3"
+    <div className="flex flex-col min-h-screen bg-white">
+      <Header />
+
+      <main className="flex-1 grid grid-cols-1 lg:grid-cols-2">
+
+        {/* ── Left: form ──────────────────────────────────────────────── */}
+        <div className="flex flex-col justify-center px-8 sm:px-16 py-16">
+
+          {/* Heading */}
+          <div className="mb-10">
+            <p className="text-[9px] font-medium tracking-[0.2em] uppercase text-[#aaa] mb-3">
+              New here?
+            </p>
+            <h1 className="text-2xl font-semibold tracking-tight text-[#212121]">
+              Create your account
+            </h1>
+          </div>
+
+          {/* API error */}
+          {apiError && (
+            <div className="mb-6 px-4 py-3 border border-red-300 bg-red-50 text-red-600 text-xs tracking-wide">
+              {apiError}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+
+              {/* Text fields */}
+              {fields.map(({ name, label, type }) => (
+                <div key={name} className="flex flex-col gap-1.5">
+                  <label className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#888]">
+                    {label}
+                  </label>
+                  <input
+                    type={type}
+                    name={name}
+                    value={formData[name]}
+                    onChange={handleChange}
+                    className={inputCls(name)}
+                  />
+                  {errors[name] && (
+                    <p className="text-[10px] text-red-500">{errors[name]}</p>
+                  )}
+                </div>
+              ))}
+
+              {/* Phone */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#888]">
+                  Phone Number
+                </label>
+                <PhoneInput
+                  country="ug"
+                  value={formData.phoneNumber}
+                  onChange={handlePhoneChange}
+                  enableSearch
+                  inputProps={{ name: "phoneNumber", required: true }}
+                  containerClass="!w-full"
+                  inputClass={`!w-full !h-11 !bg-transparent !border !text-sm !text-[#212121] !rounded-none !outline-none !transition-colors !duration-200 ${errors.phoneNumber ? "!border-red-400" : "!border-[#d4d4d4]"
+                    }`}
+                  buttonClass="!bg-transparent !border-[#d4d4d4] !rounded-none"
+                  dropdownClass="!rounded-none !shadow-md"
                 />
+                {errors.phoneNumber && (
+                  <p className="text-[10px] text-red-500">{errors.phoneNumber}</p>
+                )}
               </div>
 
-              {/* API Error Alert */}
-              {apiError && (
-                <div className="mb-2 p-2 bg-red-100 border border-red-400 text-red-700 rounded">
-                  {apiError}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {/* Full Name */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      name="fullName"
-                      value={formData.fullName}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                        errors.fullName ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    <ErrorMessage error={errors.fullName} />
-                  </div>
-
-                  {/* Email */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email
-                    </label>
-                    <input
-                      type="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                        errors.email ? "border-red-500" : "border-gray-300"
-                      }`}
-                    />
-                    <ErrorMessage error={errors.email} />
-                  </div>
-
-                  {/* Physical Address */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Physical Address
-                    </label>
-                    <input
-                      type="text"
-                      name="physicalAddress"
-                      value={formData.physicalAddress}
-                      onChange={handleChange}
-                      className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                        errors.physicalAddress
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                    />
-                    <ErrorMessage error={errors.physicalAddress} />
-                  </div>
-
-                  {/* Phone Number - Using react-phone-input-2 */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Phone Number
-                    </label>
-                    <PhoneInput
-                      country={"ug"} // Default country (Uganda)
-                      value={formData.phoneNumber}
-                      onChange={handlePhoneChange}
-                      inputClass={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                        errors.phoneNumber
-                          ? "border-red-500"
-                          : "border-gray-300"
-                      }`}
-                      containerClass="phone-input"
-                      enableSearch={true}
-                      searchClass="search-class"
-                      inputProps={{
-                        name: "phoneNumber",
-                        required: true,
-                        autoFocus: false,
-                      }}
-                    />
-                    <ErrorMessage error={errors.phoneNumber} />
-                  </div>
-
-                  {/* Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Enter Your Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                          errors.password ? "border-red-500" : "border-gray-300"
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-2 top-2 text-gray-600">
-                        {showPassword ? "Hide" : "Show"}
-                      </button>
-                    </div>
-                    <ErrorMessage error={errors.password} />
-                  </div>
-
-                  {/* Confirm Password */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Confirm Password
-                    </label>
-                    <div className="relative">
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmPassword"
-                        value={formData.confirmPassword}
-                        onChange={handleChange}
-                        className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
-                          errors.confirmPassword
-                            ? "border-red-500"
-                            : "border-gray-300"
-                        }`}
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setShowConfirmPassword(!showConfirmPassword)
-                        }
-                        className="absolute right-2 top-2 text-gray-600">
-                        {showConfirmPassword ? "Hide" : "Show"}
-                      </button>
-                    </div>
-                    <ErrorMessage error={errors.confirmPassword} />
-                  </div>
-                </div>
-
-                <div className="flex justify-center">
+              {/* Password */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#888]">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    className={`${inputCls("password")} pr-10`}
+                  />
                   <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-1/5 md:w-1/3 py-2 px-4 bg-[#7B7B7B] text-white rounded-md hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-black">
-                    {isSubmitting ? "Submitting..." : "Sign Up"}
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#212121] transition-colors">
+                    {showPassword ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-[10px] text-red-500">{errors.password}</p>
+                )}
+              </div>
 
-                <section className="flex items-center justify-center">
-                  <p className="mr-2">Already have an account with us?</p>
-                  <a
-                    href="/login"
-                    className="text-[#3771C8] hover:underline font-bold">
-                    Login
-                  </a>
-                </section>
-              </form>
+              {/* Confirm Password */}
+              <div className="flex flex-col gap-1.5">
+                <label className="text-[10px] font-medium tracking-[0.12em] uppercase text-[#888]">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPassword ? "text" : "password"}
+                    name="confirmPassword"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    className={`${inputCls("confirmPassword")} pr-10`}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#aaa] hover:text-[#212121] transition-colors">
+                    {showConfirmPassword ? <EyeOff size={15} strokeWidth={1.5} /> : <Eye size={15} strokeWidth={1.5} />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-[10px] text-red-500">{errors.confirmPassword}</p>
+                )}
+              </div>
             </div>
-          </div>
-        </main>
-        <Footer />
-      </section>
+
+            {/* Submit */}
+            <div className="pt-2 flex flex-col gap-4">
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="w-full h-11 bg-[#212121] text-white text-[10px] font-medium tracking-[0.16em] uppercase hover:bg-[#3a3a3a] disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200">
+                {isSubmitting ? "Creating account…" : "Create Account"}
+              </button>
+
+              <p className="text-center text-xs text-[#aaa]">
+                Already have an account?{" "}
+                <a href="/login" className="text-[#212121] underline underline-offset-2 hover:opacity-60 transition-opacity">
+                  Log in
+                </a>
+              </p>
+            </div>
+          </form>
+        </div>
+
+        {/* ── Right: image ─────────────────────────────────────────────── */}
+        <div className="hidden lg:block relative">
+          <img
+            src={backgroundImage}
+            alt="Sign up visual"
+            className="absolute inset-0 w-full h-full object-cover object-center"
+          />
+          {/* Subtle darkening overlay */}
+          <div className="absolute inset-0 bg-black/10" />
+        </div>
+      </main>
     </div>
   );
 };

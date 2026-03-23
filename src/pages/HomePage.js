@@ -3,6 +3,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import Header from "../components/Header";
 import Hero from "../components/Hero";
+import ProductsCarousel from "../components/ProductsCarousel"
 import Filter from "../components/Filter";
 import ProductGrid from "../components/ProductGrid";
 import BannerOne from "../components/bannerOne";
@@ -11,6 +12,9 @@ import Gallery from "../components/Gallery";
 import Footer from "../components/Footer";
 import { API_ENDPOINTS } from "../config/api";
 import Pagination from "../components/pagination";
+import GalleryShowCase from "../components/GalleryShowcase";
+import MailingList from "../components/mailingList";
+import { OrbitProgress } from "react-loading-indicators";
 
 const HomePage = () => {
   const [products, setProducts] = useState([]);
@@ -166,7 +170,7 @@ const HomePage = () => {
         <Header />
         <div className="flex-grow container mx-auto px-1 mt-8">
           <div className="flex justify-center items-center h-64">
-            <div className="text-xl">Loading products...</div>
+            <OrbitProgress variant="track-disc" color="#000000" size="small" text="" textColor="#000000" />
           </div>
         </div>
         <Footer />
@@ -217,6 +221,10 @@ const HomePage = () => {
 
   return (<>
     <Hero />
+    <ProductsCarousel />
+    <GalleryShowCase />
+    <MailingList />
+    <Footer />
 
   </>);
 };
