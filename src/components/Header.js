@@ -155,8 +155,16 @@ const Header = () => {
           <ul className="flex flex-col sm:flex-row sm:justify-center space-y-2 sm:space-y-0 sm:space-x-6 text-center py-2 px-4 sm:px-6 lg:px-8 font-alexBrush">
             <li>
               <Link
+                to="/"
+                className={`text-black font-medium text-2xl relative ${isActive("/") ? "opacity-50" : ""
+                  }`}>
+                <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">Home</span>
+              </Link>
+            </li>
+            <li>
+              <Link
                 to="/about"
-                className={`text-black font-medium text-xl relative ${isActive("/about") ? "opacity-50" : ""
+                className={`text-black font-medium text-2xl relative ${isActive("/about") ? "opacity-50" : ""
                   }`}>
                 <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">About</span>
               </Link>
@@ -165,7 +173,7 @@ const Header = () => {
             <li>
               <Link
                 to="/shop"
-                className={`text-black font-medium font-playfair tracking-wide text-xl relative ${isActive("/shop") ? "opacity-50" : ""
+                className={`text-black font-medium font-playfair tracking-wide text-2xl relative ${isActive("/shop") ? "opacity-50" : ""
                   }`}>
                 <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">Shop</span>
               </Link>
@@ -173,7 +181,7 @@ const Header = () => {
             <li>
               <Link
                 to="/our-awards"
-                className={`text-black font-medium text-xl relative ${isActive("/our-awards") ? "opacity-50" : ""
+                className={`text-black font-medium text-2xl relative ${isActive("/our-awards") ? "opacity-50" : ""
                   }`}>
                 <span className="relative inline-block after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-0.5 after:bg-black after:scale-x-0 hover:after:scale-x-100 after:transition-transform after:duration-300 after:origin-left">Our Awards</span>
               </Link>
